@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+body {
+  background: #000;
+  font-family: "Source Code Pro", serif;
+  color: #a7a7a7;
+  overflow-x: hide;
+  overflow-y: auto;
+}
+
+:root {
+  --font-size: 15px;
+  --chapter-font: 21px;
+  --font-size-mobile: 16px;
+}
+
+::selection {
+  background-color: yellow;
+  color: black;
+}
+
+.terminal:first-child {
+  margin-top: 20px;
+}
+
+.terminal > p {
+  padding-left: 5px;
+  color: #a7a7a7;
+  font-size: var(--font-size);
+  padding-top: 3px;
+  margin-top: 5px;
+  margin-bottom: 0px;
+}
+
+.terminal > p > span {
+  color: #fa615c;
+  font-weight: bold;
+}
+
+.chapter {
+  font-size: var(--chapter-font) !important;
+}
+
+.bash-command {
+  font-size: var(--font-size);
+  margin-top: 10px;
+  color: green;
+}
+
+.bash-command > label {
+  color: green;
+  padding-left: 5px;
+  font-size: var(--font-size);
+}
+
+.green { color: green !important; }
+
+input {
+  width: 50%;
+  background: none;
+  outline: none;
+  border: none;
+  color: #999;
+  letter-spacing: 1px;
+  font-size: var(--font-size);
+  padding-top: 3px;
+  padding-bottom: 2px;
+  caret-color: green;
+  font-family: "Anonymous Pro", monospace;
+  color: green;
+}
+
+.id { color: green !important; }
+
+@media screen and (max-width: 750px) {
+  .terminal > p {
+    margin-top: 3px;
+    font-size: var(--font-size-mobile);
+  }
+
+  input {
+    font-size: var(--font-size-mobile);
+  }
+
+  .bash-command > label {
+    font-size: var(--font-size-mobile);
+  }
+}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/styles.css" />
+    <title>SocketLink</title>
+    <link rel="icon" href="/assets/favicon.png" type="image/x-icon" />
+</head>
+<body>
+    <section class="terminal">
+        <p>Welcome to <span>SocketLink</span> — Type <span class="green">/connect [username] </span> to create the temporary user.</p>
+    </section>
+
+    <div class="bash-command" id="bash-command">
+        <label for="command" id="label-command">-$</label>
+        <input id="command" type="text" autoComplete="off" autofocus/>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./scripts/socket.controller.js"></script>
+    <script src="./scripts/events.controller.js"></script>
+</body>
+</html>
