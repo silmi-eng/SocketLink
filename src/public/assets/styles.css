@@ -54,6 +54,7 @@ body {
 }
 
 .green { color: green !important; }
+.green- { color: rgb(73, 255, 73) !important;}
 
 input {
   width: 50%;

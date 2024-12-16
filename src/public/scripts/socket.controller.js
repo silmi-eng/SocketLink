@@ -12,10 +12,13 @@ socket.on("clear", () => {
     lines.forEach(line => line.remove());
 });
 
-socket.on("request", ({ from }) => {
+socket.on("request", (from) => {
+    console.log(from);
+    
     const accept = confirm(`Aceitar pedido de ${from.username}?`);
     if (accept) {
-        socket.emit('accept_request', { from, to: 'username2' });
+        localStorage.setItem('to', JSON.stringify(from));
+        socket.emit('accept_request');
     }
     else {
 
