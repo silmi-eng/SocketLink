@@ -16,37 +16,58 @@ module.exports = (connection) => {
         usersConnected[uuid] = { uuid, socket: to, username };
         clear({ to });
         connection.to(to).emit("system-op", `User ${username} connected successfully!`);
+        connection.to(to).emit("save-connection", { uuid, username })
         return;
     };
 
-    const find = ({ to, from }) => { 
+    const reenter = (ctn, to) => {
+        usersConnected[ctn.uuid] = { uuid: ctn.uuid, socket: to, username: ctn.username };
+        connection.to(to).emit("system-op", `User ${ctn.username} connected successfully!`);
+    }
+
+    const findUsername = ({ to, username }) => { 
+        const selected = Object.values(usersConnected).find(user => user.username === username);
+
+        if (selected === undefined) {
+            connection.to(to).emit("system-op", `This ${username} is not connected to the service.`);
+            return;
+        };
+
+        connection.to(to).emit("system-op", `<span class="green-">[Live]</span> (${selected.username}) ${selected.uuid}`);
+    };
+
+    const findUUID = ({ uuid }) => { return Object.values(usersConnected).find(user => user.uuid === uuid); };
+
+    const find = ({ uuid, to }) => { 
         return {
-            to_: Object.values(usersConnected).find(user => user.username === to),
-            from_: Object.values(usersConnected).find(user => user.id === from)
+            uuid_: Object.values(usersConnected).find(user => user.uuid === uuid),
+            to_: Object.values(usersConnected).find(user => user.socket === to)
         };
     };
 
     const list = ({ to }) => {
         const copy = { ...usersConnected };
-        delete copy[to];
+        const mine = Object.values(copy).find(dta => dta.socket === to);
+
+        if (mine !== undefined)
+            delete copy[mine.uuid];
         
         if (Object.keys(copy).length === 0) {
             connection.to(to).emit("system-op", `No users connected.`);
             return;
         } 
 
-        for (const [id, user] of Object.entries(usersConnected)) {
-            if (user.id !== to)
-                connection.to(to).emit("system-op", `<span class="green-">[Live]</span> (${user.username}) ${user.uuid}`);
+        for (const [id, user] of Object.entries(copy)) {
+            connection.to(to).emit("system-op", `<span class="green-">[Live]</span> (${user.username}) ${user.uuid}`);
         }        
     };
 
     const remove = ({ to }) => {
-        const selected = usersConnected[to];
+        const selected = Object.values(usersConnected).find(dta => dta.socket === to);
 
-        if (selected)
-            delete usersConnected[to];
+        if (selected !== undefined)
+            delete usersConnected[selected.uuid];
     };
 
-    return { add, list, remove, find }
+    return { add, list, remove, find, findUsername, reenter, findUUID }
 };

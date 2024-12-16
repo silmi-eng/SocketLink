@@ -1,10 +1,14 @@
 module.exports = (connection) => {
-    const { add, list, remove, find } = require("./users.service")(connection);
-    const { send_request } = require("./messages.service")(connection);
+    const { add, list, remove, find, findUsername, reenter, findUUID } = require("./users.service")(connection);
+    const { send_request, response_request, message } = require("./messages.service")(connection);
     const commands = {
         "/connect": {
             func: (username, to) => add({ to, username }, clear),
             description: "[username] :Connect a user."
+        },
+        "/search": {
+            func: (username, to) => findUsername({ to, username }),
+            description: "[username] :Search user based on username"
         },
         "/ls": {
             func: (to) => list({ to }),
@@ -19,8 +23,8 @@ module.exports = (connection) => {
             description: ":List users in live."
         },
         "/request": {
-            func: (uuid, from) => send_request({ from, to: uuid }, find),
-            description: "[username] :Send request to someone."
+            func: (uuid, to) => send_request({ uuid, to }, find),
+            description: "[uuid] :Send request to someone."
         }
     }
 
@@ -34,5 +38,5 @@ module.exports = (connection) => {
         });
     };
 
-    return { commands, remove };
+    return { commands, remove, response_request, reenter, message, findUUID };
 };
