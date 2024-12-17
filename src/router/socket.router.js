@@ -1,6 +1,6 @@
 module.exports = (server) => {
     const connection = require("socket.io")(server, { cors: { origin: "*"} });
-    const { commands, remove, response_request, reenter, message, findUUID } = require("../services/commands.service")(connection);
+    const { commands, remove, reenter, handleRequest, message, findConnectedUsers, exit } = require("../services/commands.service")(connection);
 
     connection.on("connection", socket => {
         socket.on("command", command => {
@@ -14,10 +14,9 @@ module.exports = (server) => {
         });
 
         socket.on("reenter", (cnt) => reenter(cnt, socket.id));
-
-        socket.on("response_request", (dta) => response_request({ status: dta.status, to: dta.to, from: dta.from }, findUUID));
-
-        socket.on("message", (dta) => message({ to: dta.to, from: dta.from, message: dta.message }, findUUID));
+        socket.on("response-request", (cnt) => handleRequest(cnt));
+        socket.on("message", (cnt) => message({ uuid: cnt.to, socket: socket.id, message: cnt.message}, findConnectedUsers));
+        socket.on("exit-chat", (cnt) => exit({ uuid: cnt.to, socket: socket.id }, findConnectedUsers ));
 
         socket.on("disconnect", () => remove({ to: socket.id }));
     });

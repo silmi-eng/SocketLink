@@ -10,13 +10,12 @@ document.addEventListener("keydown", async (e) => {
     const cmd = input.value.toLocaleLowerCase().split(" ");
 
     if (cmd[0] === "/exit") {
-      socket.emit("exit", { uuid });
+      socket.emit("exit-chat", { to: uuid });
       window.location.href = `/`;
     }
     else {
       socket.emit("message", {
         to: uuid,
-        from: user.uuid,
         message: input.value,
       });
 
@@ -35,3 +34,4 @@ const typing = (message) => {
 
 socket.on("system-op-message", (message) => typing(message));
 socket.on("error", (error) =>  typing(`Error code: ${error.code} <br/> Message: ${error.message}`));
+socket.on("exit-session", () => window.location.href = `/`);

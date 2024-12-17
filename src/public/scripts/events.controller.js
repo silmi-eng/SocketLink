@@ -7,9 +7,6 @@ document.addEventListener("keydown", async (e) => {
     const cmd = input.value.toLocaleLowerCase().split(" ");
 
     if (cmd[0]?.charAt(0) === "/") sendCommand(cmd);
-    else {
-      console.log(input.value);
-    }
 
     input.value = "";
   }

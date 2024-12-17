@@ -18,15 +18,27 @@ socket.on("clear", () => {
     lines.forEach(line => line.remove());
 });
 
-socket.on("request", (dta) => {
-    const accept = confirm(`Aceitar pedido de ${dta.to_.username}?`);
-    if (accept) {
-        socket.emit('response_request', { to: dta.to_.uuid, from: user.uuid, status: 'success' });
-        window.location.href = `/${dta.to_.uuid}`;
-    }
-    else {
-        socket.emit('response_request', { to: dta.to_.uuid, status: 'failure' });
+socket.on("request_message", ({ to, from, type }) => {
+    const question = confirm(`The user ${to.username} wants to send you a message.`);
+    if (to.uuid !== undefined) {
+        if (question) {
+            socket.emit("response-request", { to, from, type, status: true });
+            window.location.href = `/${from.uuid}`;
+        } 
+        else
+            socket.emit("response-request", { to, from, type, status: false });
     }
 });
 
-socket.on("request-success", (dta) => window.location.href = `/${dta.to}`);
+socket.on("request-success", ({ to, type }) => {
+    switch (type) {
+        case "request_message":
+            handleMessageRequest(to);
+            break;
+
+        default:
+            console.warn(`Unknown request type: ${type}`);
+    }
+});
+
+const handleMessageRequest = (to) => { window.location.href = `/${to.uuid}` };

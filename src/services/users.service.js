@@ -4,20 +4,13 @@ module.exports = (connection) => {
     const usersConnected = {};
 
     const add = ({ to, username }, clear) => {
-        const verify = Object.values(usersConnected).some(user => user.username === username);
-
-        if (verify) {
-            connection.to(to).emit("error", { code: 1, message :`The username "${username}" is already in use.` })
-            return;
-        };
-
         const uuid = uuidv4();
 
         usersConnected[uuid] = { uuid, socket: to, username };
         clear({ to });
+
         connection.to(to).emit("system-op", `User ${username} connected successfully!`);
-        connection.to(to).emit("save-connection", { uuid, username })
-        return;
+        connection.to(to).emit("save-connection", { uuid, username });
     };
 
     const reenter = (ctn, to) => {
@@ -25,24 +18,22 @@ module.exports = (connection) => {
         connection.to(to).emit("system-op", `User ${ctn.username} connected successfully!`);
     }
 
-    const findUsername = ({ to, username }) => { 
-        const selected = Object.values(usersConnected).find(user => user.username === username);
+    const findConnectedUsers = ({ uuid, socket }) => {
+        return {
+            to: Object.values(usersConnected).find(dta => dta.uuid === uuid),
+            from: Object.values(usersConnected).find(dta => dta.socket === socket)
+        };
+    }
+
+    const verify = ({ uuid, socket }) => {
+        const selected = Object.values(usersConnected).find(dta => dta.uuid === uuid);
 
         if (selected === undefined) {
-            connection.to(to).emit("system-op", `This ${username} is not connected to the service.`);
+            connection.to(socket).emit("system-op", `The user you search for is not available.`);
             return;
-        };
+        }
 
-        connection.to(to).emit("system-op", `<span class="green-">[Live]</span> (${selected.username}) ${selected.uuid}`);
-    };
-
-    const findUUID = ({ uuid }) => { return Object.values(usersConnected).find(user => user.uuid === uuid); };
-
-    const find = ({ uuid, to }) => { 
-        return {
-            uuid_: Object.values(usersConnected).find(user => user.uuid === uuid),
-            to_: Object.values(usersConnected).find(user => user.socket === to)
-        };
+        connection.to(socket).emit("system-op", `<span class="green-">[Live]</span> (${selected.username}) ${selected.uuid}`);
     };
 
     const list = ({ to }) => {
@@ -69,5 +60,5 @@ module.exports = (connection) => {
             delete usersConnected[selected.uuid];
     };
 
-    return { add, list, remove, find, findUsername, reenter, findUUID }
+    return { add, list, remove, findConnectedUsers, reenter, verify }
 };
